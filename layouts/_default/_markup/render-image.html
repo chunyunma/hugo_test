@@ -1,0 +1,49 @@
+{{/*
+
+markdown render hook for images, with auto-resizing enabled v2020-10-28
+
+!! This would bypass the `img` shortcode
+
+See `img` shortcode for proper attribution.
+
+*/}}
+
+{{ $sizes := (slice "480" "800" "1200" "1500") }}
+
+{{ $src := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) }}
+{{ $alt := .PlainText | safeHTML }}
+{{ $caption := "" }}
+{{ with .Title }}
+  {{ $caption = . | safeHTML }}
+{{ end }}
+
+<p>
+<figure class="figure"
+				{{with $alt }}
+				{{ $desc := anchorize . }}
+				{{ $words := split $desc "-" }}
+				id="{{index $words 0 }}-figure"
+				{{ end }}>
+  <a href="{{ $src.RelPermalink }}">
+    <img
+        sizes="(min-width: 35em) 1200px, 100vw"
+        {{/* only srcset images smaller than or equal to the src (original) image size, as Hugo will upscale small images */}}  
+        srcset='
+        {{ range $sizes }}
+              {{ if ge $src.Width . }}{{ ($src.Resize (printf "%sx" .)).Permalink }} {{ (printf "%sw" .) }},{{ end }}
+        {{ end }}'
+
+        {{/* when no support for srcset (old browsers, RSS), we load small (800px) */}}
+        {{/* if image smaller than 800, then load the image itself */}}
+        {{ if ge $src.Width "800" }}src="{{ ($src.Resize "800x").Permalink }}"
+        {{ else }}src="{{ $src.Permalink }}"
+        {{ end }}
+
+				alt="{{ if $alt }}{{ $alt }}{{ else if $caption }}{{ $caption | markdownify | plainify }}{{ else }}&nbsp;{{ end }}"
+				loading="lazy"
+      >
+	</a>
+	{{ with $caption }}
+    <figcaption>{{ . | markdownify | humanize }}</figcaption>
+  {{ end }}
+</p>

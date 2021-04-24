@@ -4,7 +4,7 @@
 
 {{ range .Data.Terms.Alphabetical }}
 <p>
-  <a class="btn btn-outline-dark font-125" href="{{ .Page.RelPermalink }}">
+  <a class="btn btn-outline-dark font-125" href="{{ .Page.Permalink }}">
     <span class="badge badge-dark">{{ .Count }}</span> {{ .Page.Title }}
   </a>
 </p>

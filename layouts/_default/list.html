@@ -1,6 +1,7 @@
 {{ define "main" }}
 
 <h1>{{ .Title }}</h1>
+<!-- Ranges through content/posts/*.md in reversed order -->
 {{ range .Pages.ByPublishDate.Reverse }}
 <p>
   <a class="font-125" href="{{ .RelPermalink }}">{{ .Title }}</a>
