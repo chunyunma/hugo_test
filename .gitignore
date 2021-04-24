@@ -3,3 +3,5 @@ local_git_config.sh
 .DS_Store
 **/renv.lock
 **/renv
+_tmp/
+resources/_gen

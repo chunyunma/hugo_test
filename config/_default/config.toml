@@ -2,7 +2,7 @@ baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "Data Narrator Sandbox"
 ignoreFiles = [ "\\.Rmd$", "_files$", "_cache$", "index\\.html", "renv", 
-		"\\.Rprofile$", "\\.Renviron$", "renv.lock"]
+		"\\.Rprofile$", "\\.Renviron$", "renv.lock", "_tmp$"]
 
 [permalinks]
   blog = "/:year/:month/:day/:slug/"
