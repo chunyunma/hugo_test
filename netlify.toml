@@ -10,9 +10,3 @@
   for = "/*"
     [headers.values]
       Access-Control-Allow-Origin = "*"
-
-[[redirects]]
-	from = "/teaching/*"
-	to = "https://chunyunma.me"
-	status = 200
-	force = true
