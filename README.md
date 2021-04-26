@@ -8,7 +8,7 @@ Based on [Make a Hugo blog from scratch](https://zwbetz.com/make-a-hugo-blog-fro
 [TODO]:
 
 - Trouble shoot `layouts/_default/_markup/render-image.html`, 
-currently located in `_tmp` folder ocally.
+currently located in `_tmp` folder locally.
 
 - Add back enhanced rmarkdown features, 
 sample posts currently located in `_tmp` folder locally.
