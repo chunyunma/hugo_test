@@ -1,6 +1,8 @@
 {{/*
 
-markdown render hook for images, with auto-resizing enabled v2020-10-28
+<!-- markdown render hook for images, with auto-resizing enabled v2020-10-28 -->
+markdown render hook for images, with auto-resizing disabled v2021-04-26
+<https://github.com/gohugoio/hugo/issues/8025>
 
 !! This would bypass the `img` shortcode
 
@@ -28,7 +30,6 @@ See `img` shortcode for proper attribution.
   <a href="{{ $src.RelPermalink }}">
     <img
         sizes="(min-width: 35em) 1200px, 100vw"
-        {{/* only srcset images smaller than or equal to the src (original) image size, as Hugo will upscale small images */}}  
 
         {{/* when no support for srcset (old browsers, RSS), we load small (800px) */}}
         {{/* if image smaller than 800, then load the image itself */}}

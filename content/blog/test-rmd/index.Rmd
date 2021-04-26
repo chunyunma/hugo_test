@@ -1,0 +1,119 @@
+---
+slug: "test-rmd"
+title: "Test Rmd"
+date: 2020-09-28T20:31:51-04:00 
+tags: [R, Rmd]
+draft: false
+autonumbering: true
+---
+
+```{r setup, include=FALSE}
+# Options to have images saved in the post folder
+# And to disable symbols before output
+knitr::opts_chunk$set(echo=F, message=F, fig.path = "", comment = "")
+
+# # knitr hook to make images output use Hugo options
+# knitr::knit_hooks$set(
+#   plot = function(x, options) {
+#     hugoopts <- options$hugoopts
+#     paste0(
+#       "{", "{<figure src=",
+#       '"', x, '" ',
+#       if (!is.null(hugoopts)) {
+#         glue::glue_collapse(
+#           glue::glue('{names(hugoopts)}="{hugoopts}"'),
+#           sep = " "
+#         )
+#       },
+#       ">}}\n"
+#     )
+#   }
+# )
+
+# knitr hook to use Hugo highlighting options
+knitr::knit_hooks$set(
+  source = function(x, options) {
+  hlopts <- options$hlopts
+    paste0(
+      "```r ",
+      if (!is.null(hlopts)) {
+      paste0("{",
+        glue::glue_collapse(
+          glue::glue('{names(hlopts)}={hlopts}'),
+          sep = ","
+        ), "}"
+        )
+      },
+      "\n", glue::glue_collapse(x, sep = "\n"), "\n```\n"
+    )
+  }
+)
+
+
+knitr::knit_hooks$set(plot = function(x,options) {
+      base = knitr::opts_knit$get('base.url')
+      if (is.null(base)) base = ''
+      alt = ifelse (is.null(options$alt),"",options$alt)
+      cap = ifelse (is.null(options$caption),"",options$caption)
+      if (alt != ""){
+        sprintf('![%s](%s%s "%s")', alt, base, x, cap)
+      } else {
+        sprintf('![%s](%s%s)', cap, base, x)  
+        }
+  })
+```
+
+## Preamble
+
+Picture this: Joey owns an ice cream shop. The table below is a tabulation of daily temperature in July 2018 and the number of ice creams Joey sold on each day.
+
+```{r}
+library(tidyverse)
+```
+
+```{r sim-data, alt="Snapshot. a snapshot of the ice cream sale data", caption="Joey's ice cream sale in July 2018"}
+set.seed(6)
+x <- sample(20:35, 31, replace=T)
+b0 <- 17
+b1 <- 10
+sigma <- 5.2
+eps <- rnorm(x, 0, sigma)
+y <- floor(b0 + b1*x + eps) ## Simulate ice cream sales 
+icecream <- data.frame(x, y)
+colnames(icecream) <- c('temp', 'icecream_sale')
+icecream %>% slice_sample(n = 5)
+```
+
+### Let's plot the data!
+
+```{r scatter, class="figure", alt="Sales. A scatter plot of icecream sales and daily temperature", caption="A scatter plot of icecream sales and daily temperature"}
+(scatter_icecream <- ggplot(icecream, aes(x = temp, y = icecream_sale)) + geom_point(size = 2))
+```
+
+[Figure 1](#sales-figure) brings out a pattern otherwise hidden in the data; that is, the ice cream sales seem to increase as temperature increases. Although this type of relationship is very common, it implies a profound idea[^1]; **predict the unknown based on the known**. If the relationship between ice cream sales and temperature can be established, can we predict the ice cream sales on a given day based on its weather forecast? This predict-based-on-established-relationship is the essence of regression.
+
+## Dive deeper
+
+```{r regression}
+reg_sale <- lm(icecream_sale ~ temp, data = icecream)
+summary(reg_sale)
+```
+
+Let's take a look at residuals [^2]
+
+
+```{r residuals, class="figure", alt="residuals in a regression model", caption="Residuals in a regression model"}
+icecream$predicted <- predict(reg_sale)
+icecream$residuals <- residuals(reg_sale)
+ggplot(icecream, aes(x = temp, y = icecream_sale)) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgrey") +  # Plot regression slope
+  geom_segment(aes(xend = temp, yend = predicted), alpha = .2) +  # alpha to fade lines
+  geom_point() +
+  geom_point(aes(y = predicted), shape = 1) +
+  theme_bw()
+```
+
+
+[^1]: This is another implicit assumption when we are conducting analyses like regression; what happened in the past will happen again in the future. This is a powerful and yet risky assumption.
+
+[^2]: I used code from this [website](https://drsimonj.svbtle.com/visualising-residuals) when generating this plot
